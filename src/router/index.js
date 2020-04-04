@@ -4,6 +4,7 @@ import Home from '../views/Home'
 import Mine from '../views/Mine'
 import Account from '../views/Account'
 import SonglistDetail from '../views/SonglistDetail'
+import Recommend from '../views/Recommend'
 
 Vue.use(VueRouter)
 
@@ -21,7 +22,9 @@ VueRouter.prototype.push = function push(location) {
 
 const routes = [
   { path: '/', redirect: '/home' },
-  { name: 'Home', path: '/home', component: Home, },
+  { name: 'Home', path: '/home', component: Home,children:[
+    {name:'recommend',path:'/home/recommend',component:Recommend}
+  ] },
   { name: 'Mine', path: '/mine', component: Mine },
   { name: 'Account', path: '/account', component: Account },
   { name: 'SonglistDetail', path: 'songlistdetail/:id', component: SonglistDetail }

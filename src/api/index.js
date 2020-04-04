@@ -4,6 +4,7 @@ import { api_getCategory, api_getPlayListByCategory } from './category'
 import { api_getSonglistDetail } from './songlistDetail'
 import {api_getSongDetail,api_getSongSrc,api_getSongLyric} from './play'
 import {api_getUserPlaylist} from './mine'
+import {api_getRecommendSongs} from './recommend'
 
 export {
     // login view
@@ -30,5 +31,8 @@ export {
     api_getSongLyric,
 
     //mine view
-    api_getUserPlaylist
+    api_getUserPlaylist,
+
+    //recommend view
+    api_getRecommendSongs,
 }

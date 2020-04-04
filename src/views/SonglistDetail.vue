@@ -112,9 +112,11 @@ import { joinObjectArray } from "../lib/utils";
 import { mapState } from "vuex";
 import Popup from "../components/Popup";
 import BScroll from "better-scroll";
+import {mixins} from '../mixins/mixins';
 
 export default {
   name: "songlistDetail",
+  mixins:[mixins],
   data() {
     return {
       detailData: "",
@@ -156,17 +158,8 @@ export default {
       }
     },
     play(e) {
-      let id = e.currentTarget.getAttribute("data-id");
-      if (id !== this.songInfo.id) {
-        let sing = {
-          id,
-          name: e.currentTarget.getAttribute("data-name"),
-          artists: e.currentTarget.getAttribute("data-artists")
-        };
-        this.songsArray.push(sing);
-        this.$store.dispatch("tapPlay", sing);
-        this.$store.commit("changeShowPlayView", true);
-      }
+      this.playMusic(e)
+      this.$store.commit("changeShowPlayView", true);
     },
     playAll() {
       this.$store.commit("setSongArray", []);

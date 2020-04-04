@@ -1,12 +1,12 @@
 <template>
   <div id="homeContainer" class="container">
-    <!-- <transition
+    <transition
       enter-active-class="animated slideInRight faster"
       leave-active-class="animated slideOutRight faster"
       mode="out-in"
     >
       <router-view></router-view>
-    </transition> -->
+    </transition>
     <!-- 搜索框 -->
     <van-row class="search-box">
       <van-col span="24">
@@ -29,7 +29,7 @@
       <!-- 功能按钮 -->
       <div class="feature-button">
         <van-row>
-          <van-col span="8">
+          <van-col span="8" @click="()=>{$router.push({path:'/home/recommend'})}">
             <div class="circle">
               <van-icon class="iconfont" class-prefix="icon" name="rili" />
               <span class="date">{{getCurrentDay()}}</span>
@@ -142,9 +142,11 @@ import {
 import BScroll from "better-scroll";
 import { joinObjectArray } from "../lib/utils";
 import { mapState } from "vuex";
+import {mixins} from '../mixins/mixins';
 
 export default {
   name: "Home",
+  mixins:[mixins],
   data() {
     return {
       show: false, //飞入动画
@@ -231,7 +233,7 @@ export default {
           this.flyImage = imgUrl;
           this.startEl = currentTarget.querySelector(".newSong-image");
           this.show = true;
-          this.play(e)
+          this.playMusic(e)
         }
       }
     },
@@ -270,20 +272,6 @@ export default {
         el.addEventListener("transitionend", remove);
       });
     },
-    //播放
-    play(e) {
-      if (this.switchIndex === 0) {
-        let id = e.currentTarget.getAttribute("data-id");
-        let sing = {
-          id,
-          name: e.currentTarget.getAttribute("data-name"),
-          artists: e.currentTarget.getAttribute("data-artists")
-        }
-        this.$store.dispatch("tapPlay", sing);
-        this.songsArray.push(sing)
-
-      }
-    }
   }
 };
 </script>
