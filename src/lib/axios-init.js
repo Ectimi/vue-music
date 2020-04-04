@@ -5,6 +5,9 @@ import axios from 'axios'
 // 它可以通过设置一个 `baseURL` 便于为 axios 实例的方法传递相对 URL
 axios.defaults.baseURL = 'http://120.77.3.226:8080';
 
+// 默认超时时间
+axios.defaults.timeout = 15000
+
 axios.defaults.headers.post['Content-Type'] = 'application/json; charset=utf-8';
 axios.defaults.crossDomain = true;
 // axios.defaults.withCredentials = true;  //设置cross跨域 并设置访问权限 允许跨域携带cookie信息

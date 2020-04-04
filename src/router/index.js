@@ -21,18 +21,15 @@ VueRouter.prototype.push = function push(location) {
 
 const routes = [
   { path: '/', redirect: '/home' },
-  {
-    name:'Home',path: '/home', component: Home, children: [
-      { name:'SonglistDetail',path: 'songlistdetail/:id', component: SonglistDetail }
-    ]
-  },
-  { name:'Mine',path: '/mine', component: Mine },
-  { name:'Account',path: '/account', component: Account }
+  { name: 'Home', path: '/home', component: Home, },
+  { name: 'Mine', path: '/mine', component: Mine },
+  { name: 'Account', path: '/account', component: Account },
+  { name: 'SonglistDetail', path: 'songlistdetail/:id', component: SonglistDetail }
 ]
 
 const router = new VueRouter({
   routes,
-  'active-class':'router-link-active'
+  'active-class': 'router-link-active'
 })
 
 export default router

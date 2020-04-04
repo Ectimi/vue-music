@@ -8,6 +8,14 @@ const mutations = {
     changeLogin(state, payload) {
         state.isLogin = payload;
     },
+
+    setUserId(state,payload){
+        state.userId = payload
+    },
+
+    setSongArray(state,payload){
+        state.songsArray = payload
+    },
     //切换显示 Play 页面
     changeShowPlayView(state, payload) {
         state.isShowPlayView = payload
@@ -27,6 +35,11 @@ const mutations = {
     //设置播放索引 
     setCurrentIndex(state, payload) {
         state.currentIndex = payload
+    },
+
+    //设置当前歌词行
+    setCurrentLineNo(state,payload){
+        state.currentLineNo = payload
     },
     
     /*  切换音乐  
@@ -50,7 +63,7 @@ const mutations = {
         } else {
             state.currentIndex = RandomNumBoth(0, state.songsArray.length - 1)
         }
-    }
+    },
 }
 
 export default mutations

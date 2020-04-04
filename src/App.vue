@@ -32,9 +32,18 @@
       @click="()=>{$store.commit('changeShowPlayView',true)}"
     ></div>
 
-    <keep-alive>
-      <router-view />
-    </keep-alive>
+    <transition
+      
+      :enter-active-class=enterActiveClass
+      :leave-active-class=leaveActiveClass
+      :mode=mode
+    >
+      <router-view></router-view>
+    </transition>
+
+    <!-- <keep-alive v-else>
+      <router-view></router-view>
+    </keep-alive> -->
 
     <!-- 底部tab栏 -->
     <div class="tabbar">
@@ -63,7 +72,10 @@ export default {
     return {
       currentRate: 30,
       showPopup: false,
-      rate: 0
+      rate: 0,
+      enterActiveClass:"",
+      leaveActiveClass:"",
+      mode:"out-in"
     };
   },
   computed: {
@@ -74,7 +86,8 @@ export default {
       "playMode",
       "currentPercent",
       "songsArray",
-      "currentIndex"
+      "currentIndex",
+      "currentLineNo"
     ]),
     plateBg() {
       return this.songInfo.coverImg
@@ -89,6 +102,22 @@ export default {
       } else {
         this.$refs.audio.pause();
       }
+    },
+    '$route'(to,from){
+      //如果当前路由由 home 进入 songlistdetail 或者由 mine 进入 songlistdetail 添加过渡路由
+      if(to.path.indexOf('songlistdetail')>-1 && ((from.path.indexOf('home')>-1)||(from.path.indexOf('mine')>-1))){
+        this.mode = "out-in"
+        this.enterActiveClass="animated slideInRight faster";
+        this.leaveActiveClass=""
+      }else if(from.path.indexOf('songlistdetail')>-1 && to.path.indexOf('home')>-1){
+        this.mode = "in-out"
+        this.enterActiveClass="animated slideInLeft faster"
+        this.leaveActiveClass="animated slideOutRight faster"
+      }else{
+        this.mode = ""
+        this.enterActiveClass=""
+        this.leaveActiveClass=""
+      }
     }
   },
   methods: {},
@@ -99,9 +128,15 @@ export default {
     if (phone && password) {
       this.$store.dispatch("login", { phone, password, vue: this });
     }
+    console.log(this.$route);
   },
   mounted() {
     let audio = this.$refs.audio;
+
+    //在播放被终止时触发,例如, 当播放中的音频重新开始播放时会触发这个事件
+    audio.addEventListener("abort", () => {
+      this.$store.commit("setCurrentLineNo", 0);
+    });
 
     //监听是否可以播放
     audio.addEventListener("canplay", () => {
@@ -112,9 +147,9 @@ export default {
 
     //监听是否可以播放
     audio.addEventListener("playing", () => {
-      if(this.isPlay){
+      if (this.isPlay) {
         audio.play();
-      }else{
+      } else {
         audio.pause();
       }
     });

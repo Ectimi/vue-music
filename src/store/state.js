@@ -2,6 +2,9 @@ const state = {
     //是否登录
     isLogin:false,
 
+    //用户id
+    userId:'',
+
     //是否正在播放
     isPlay:false,
 
@@ -22,6 +25,9 @@ const state = {
 
     //播放模式   0:列表循环  1：随机  2：单曲循环
     playMode:0,
+
+    //当前歌词行
+    currentLineNo:0,
     
     //当前正在播放的歌曲信息
     songInfo:{

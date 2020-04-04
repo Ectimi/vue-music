@@ -3,6 +3,7 @@ import { api_getBanner, api_getPlaylistRecommend, api_getNewSong, api_getNewAlbu
 import { api_getCategory, api_getPlayListByCategory } from './category'
 import { api_getSonglistDetail } from './songlistDetail'
 import {api_getSongDetail,api_getSongSrc,api_getSongLyric} from './play'
+import {api_getUserPlaylist} from './mine'
 
 export {
     // login view
@@ -26,5 +27,8 @@ export {
     // play view
     api_getSongDetail,
     api_getSongSrc,
-    api_getSongLyric
+    api_getSongLyric,
+
+    //mine view
+    api_getUserPlaylist
 }

@@ -16,18 +16,34 @@
       enter-active-class="animated fadeIn faster"
       leave-active-class="animated fadeOut faster"
       mode="out-in"
+      @after-enter="afterEnter"
     >
       <!-- 碟子 -->
-      <div class="center plate" key="plate" v-if="!showLyric" @click="()=>{this.showLyric=true}">
+      <div
+        class="center"
+        ref="plate"
+        key="plate"
+        v-if="!showLyric"
+        @click="()=>{this.showLyric=true}"
+      >
         <img
-          :class="isPlay?'play':''"
+          :class="[isPlay?'play':'','plate']"
           :src="songInfo.coverImg||require('../../public/images/plate.png')"
         />
       </div>
 
       <!-- 歌词 -->
-      <div class="center lyric-box" key="lyric" v-else @click="()=>{this.showLyric=false}">
-        <div class="lyric">111</div>
+      <div class="center" ref="lyricWrapper" key="lyric" v-else @click="()=>{this.showLyric=false}">
+        <div class="lyric-box" ref="lyricBox">
+          <ul class="lyric-list">
+            <li
+              class="lyric-item"
+              v-for="(item,index) in songInfo.lyric"
+              :key="index"
+              :class="'l'+index"
+            >{{item.text}}</li>
+          </ul>
+        </div>
       </div>
     </transition>
 
@@ -68,22 +84,45 @@
       <van-col class="btn next-btn" @click="switchMusic('next')">
         <span class="iconfont icon-xiayiqu101"></span>
       </van-col>
-      <van-col class="btn list-btn">
+      <van-col class="btn list-btn" @click="()=>{this.showPopup = true}">
         <span class="iconfont icon-liebiao"></span>
       </van-col>
     </van-row>
+
+    <van-popup v-model="showPopup" position="bottom" :style="{ height: '50%' }">
+      <p class="title">当前播放({{songsArray.length}})</p>
+      <ul class="singlist-box">
+        <li
+          class="singlist-item"
+          v-for="(item,index) in songsArray"
+          :key="index"
+          :class="item.id==songInfo.id?'currentPlay':''"
+          :data-id="item.id"
+          @click="play"
+        >
+          <van-icon class="volume-icon" v-if="item.id==songInfo.id" name="volume-o" />
+          <span class="sing-name">{{item.name}} -</span>
+          <span class="artists">{{item.artists}}</span>
+          <van-divider v-if="index!=songsArray.length-1" />
+        </li>
+      </ul>
+    </van-popup>
   </div>
 </template>
 
 <script>
 import { mapState } from "vuex";
 import { s_to_hs, RandomNumBoth } from "../lib/utils";
+import BScroll from "better-scroll";
 
 export default {
   name: "Play",
   data() {
     return {
-      showLyric: false //是否显示歌词
+      scroll: "",
+      isScroll: true, //是否滚动歌词
+      showLyric: false, //是否显示歌词
+      showPopup: false
     };
   },
   computed: {
@@ -95,10 +134,91 @@ export default {
       "currentTime",
       "currentPercent",
       "playMode",
-      "currentIndex"
+      "currentIndex",
+      "currentLineNo"
     ])
   },
+  watch: {
+    currentLineNo(newValue, oldValue) {
+      if (newValue != oldValue) {
+        this.isScroll = true;
+      }
+    }
+  },
+  mounted() {
+    document
+      .querySelector(".audio")
+      .addEventListener("timeupdate", this.lyricScroll);
+  },
+  destroyed() {
+    document
+      .querySelector(".audio")
+      .removeEventListener("timeupdate", this.lyricScroll);
+  },
   methods: {
+    //歌词实时滚动
+    lyricScroll() {
+      let audio = document.querySelector(".audio");
+
+      if (this.showLyric) {
+        var time = parseFloat(audio.currentTime.toFixed(3));
+
+        for (let i = 0, len = this.songInfo.lyric.length; i < len; i++) {
+          if (
+            this.songInfo.lyric[i].time <= time &&
+            this.songInfo.lyric[i + 1].time >= time
+          ) {
+            this.$store.commit("setCurrentLineNo", i);
+
+            var el = document.querySelector(".lightHeight");
+            if (el) {
+              el.classList.remove("lightHeight");
+            }
+
+            var lyricItem = document.querySelector(`.l${this.currentLineNo}`);
+            if (lyricItem) {
+              lyricItem.classList.add("lightHeight");
+              this.scroll &&
+                this.isScroll &&
+                this.scroll.scrollToElement(lyricItem, 400);
+            }
+
+            break;
+          }
+        }
+      }
+    },
+    //监听动画完成
+    afterEnter() {
+      if (this.showLyric) {
+        let audio = document.querySelector(".audio");
+        // 实例化 better-scroll
+        this.scroll = new BScroll(this.$refs.lyricBox, {
+          scrollY: true,
+          click: true
+        });
+        this.scroll.scrollToElement(
+          document.querySelector(`.l${this.currentLineNo}`),
+          400
+        );
+
+        var startY, moveEndY;
+        this.$refs.lyricWrapper.addEventListener("touchstart", e => {
+          e.preventDefault();
+          startY = e.changedTouches[0].pageY;
+
+          this.$refs.lyricWrapper.addEventListener("touchmove", e => {
+            e.preventDefault();
+
+            moveEndY = e.changedTouches[0].pageY;
+
+            if (moveEndY - startY > 0 || moveEndY - startY < 0) {
+              this.isScroll = false;
+            }
+          });
+        });
+      }
+    },
     //切换播放模式
     switchPlayMode() {
       let tips = ["列表循环", "随机播放", "单曲循环"];
@@ -147,6 +267,17 @@ export default {
         audio.load();
         audio.play();
       }
+    },
+    play(e) {
+      let id = e.currentTarget.getAttribute("data-id");
+      if (id !== this.songInfo.id) {
+        let sing = {
+          id,
+          name: e.currentTarget.getAttribute("data-name"),
+          artists: e.currentTarget.getAttribute("data-artists")
+        };
+        this.$store.dispatch("tapPlay", sing);
+      }
     }
   }
 };
@@ -188,31 +319,62 @@ export default {
     }
   }
 
-  //碟子
-  .plate {
-    img {
+  .center {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    height: 65%;
+    overflow: hidden;
+
+    //碟子
+    .plate {
       width: 250px;
       height: 250px;
       border-radius: 50%;
     }
 
     .play {
-      animation: turn 10s linear infinite;
+      animation: turn 20s linear infinite;
     }
-  }
 
-  .center {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    width: 100%;
-    height: 70%;
+    //歌词
+    .lyric-box {
+      position: relative;
+      width: 70%;
+      height: 60%;
+      align-self: flex-end;
+      // overflow: hidden;
+
+      .lyric-list {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+      }
+
+      .lyric-item {
+        width: 100%;
+        min-height: 20px;
+        line-height: 20px;
+        text-align: center;
+        font-size: 14px;
+        letter-spacing: 1px;
+        color: rgb(82, 82, 80);
+      }
+
+      .lightHeight {
+        color: white;
+      }
+    }
   }
 
   // 按钮
   .btn-box {
     color: white;
     font-size: 24px;
+    margin-top: 20px;
+
     .ellipsis {
       transform: rotateZ(90deg);
     }
@@ -251,6 +413,39 @@ export default {
 
     .play-btn span {
       font-size: 40px;
+    }
+  }
+
+  .van-popup {
+    border-top-left-radius: 15px;
+    border-top-right-radius: 15px;
+    padding: 15px;
+    box-sizing: border-box;
+
+    .singlist-box {
+      margin-top: 10px;
+    }
+
+    .title {
+      font-size: 16px;
+    }
+
+    .sing-name {
+      margin-left: 10px;
+      font-size: 14px;
+    }
+
+    .artists {
+      color: rgb(61, 60, 60);
+    }
+
+    .currentPlay,
+    .currentPlay > .artists {
+      color: rgb(255, 45, 33);
+    }
+
+    .van-divider {
+      margin: 10px 0;
     }
   }
 

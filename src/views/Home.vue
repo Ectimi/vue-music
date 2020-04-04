@@ -1,12 +1,12 @@
 <template>
   <div id="homeContainer" class="container">
-    <transition
+    <!-- <transition
       enter-active-class="animated slideInRight faster"
       leave-active-class="animated slideOutRight faster"
       mode="out-in"
     >
       <router-view></router-view>
-    </transition>
+    </transition> -->
     <!-- 搜索框 -->
     <van-row class="search-box">
       <van-col span="24">
@@ -95,8 +95,8 @@
           :data-id="item.id"
           :data-img="item.picUrl"
           :data-name="item.name"
-          :data-artists="joinObjectArray(item.song.artists,'/','name')"
-          @click="flyAnimation($event),play($event)"
+          :data-artists="item.song&&joinObjectArray(item.song.artists,'/','name')"
+          @click="flyAnimation($event)"
         >
           <van-col span="6" offset="1" class="left">
             <img :src="item.picUrl" class="newSong-image" />
@@ -171,6 +171,7 @@ export default {
       if (this.switchIndex == 0) {
         return this.newSongs;
       } else {
+        console.log(this.newAlbums);
         return this.newAlbums;
       }
     }
@@ -220,15 +221,18 @@ export default {
     },
     //飞入动画
     flyAnimation(e) {
-      let currentTarget = e.currentTarget;
-      let imgUrl = currentTarget.getAttribute("data-img");
-      //如果是第一次点击，则展示飞入动画，并播放，如果播放的是当前点击的歌曲，则进入播放页面
-      if (this.songInfo.id == currentTarget.getAttribute("data-id")) {
-        this.$store.commit("changeShowPlayView", true);
-      } else {
-        this.flyImage = imgUrl;
-        this.startEl = currentTarget.querySelector(".newSong-image");
-        this.show = true;
+      if (this.switchIndex === 0) {
+        let currentTarget = e.currentTarget;
+        let imgUrl = currentTarget.getAttribute("data-img");
+        //如果是第一次点击，则展示飞入动画，并播放，如果播放的是当前点击的歌曲，则进入播放页面
+        if (this.songInfo.id == currentTarget.getAttribute("data-id")) {
+          this.$store.commit("changeShowPlayView", true);
+        } else {
+          this.flyImage = imgUrl;
+          this.startEl = currentTarget.querySelector(".newSong-image");
+          this.show = true;
+          this.play(e)
+        }
       }
     },
     //动画进入的第一帧，动画的元素刚开始是隐藏的，这里设置其刚显示的时候的样式
@@ -268,17 +272,17 @@ export default {
     },
     //播放
     play(e) {
-      let id = e.currentTarget.getAttribute("data-id");
-      //把点击播放的歌曲放进当前播放歌曲列表
-      this.songsArray.push({
-        id,
-        name: e.currentTarget.getAttribute("data-name"),
-        artists: e.currentTarget.getAttribute("data-artists")
-      });
-      //根据id拿到歌曲的信息
-      this.$store.dispatch("getSongInfo", id);
-      //播放
-      this.$store.commit("togglePlay", true);
+      if (this.switchIndex === 0) {
+        let id = e.currentTarget.getAttribute("data-id");
+        let sing = {
+          id,
+          name: e.currentTarget.getAttribute("data-name"),
+          artists: e.currentTarget.getAttribute("data-artists")
+        }
+        this.$store.dispatch("tapPlay", sing);
+        this.songsArray.push(sing)
+
+      }
     }
   }
 };
@@ -383,9 +387,9 @@ export default {
 
       .date {
         position: absolute;
-        top:50%;
-        left:50%;
-        transform: translate(-50%,-37%);
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -37%);
         color: white;
       }
 

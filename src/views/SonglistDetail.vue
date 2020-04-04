@@ -53,9 +53,9 @@
     <div class="list-box" ref="listBox">
       <van-row type="flex" align="center" justify="center">
         <van-col span="2" offset="1">
-          <van-icon name="play-circle-o" />
+          <van-icon name="play-circle-o" @click="playAll" />
         </van-col>
-        <van-col span="5" style="fontSize:16px">播放全部</van-col>
+        <van-col span="5" style="fontSize:16px" @click="playAll">播放全部</van-col>
         <van-col
           span="6"
           offset="0"
@@ -83,9 +83,10 @@
             :data-artists="joinObjectArray(item.ar,'/','name')"
             @click="play($event)"
           >
-            <van-col offset="1" class="index">{{index+1}}</van-col>
+            <van-icon class="volume-icon" v-if="item.id==songInfo.id" name="volume-o" />
+            <van-col v-else offset="1" class="index">{{index+1}}</van-col>
             <van-col span="20" offset="1">
-              <div class="name van-ellipsis">{{item.name}}</div>
+              <div class="name van-ellipsis" :class="item.id==songInfo.id?'currentPlay':''">{{item.name}}</div>
               <div class="singer van-ellipsis">{{joinObjectArray(item.ar,'/','name')}}</div>
             </van-col>
             <van-icon class="ellipsis" name="ellipsis" />
@@ -121,13 +122,12 @@ export default {
       scroll: ""
     };
   },
-  computed:{
-    ...mapState(["songInfo",'songsArray']),
+  computed: {
+    ...mapState(["songInfo", "songsArray"])
   },
   created() {
     api_getSonglistDetail({ id: this.$route.params.id }).then(data => {
       this.detailData = data.data.playlist;
-      console.log(this.detailData);
     });
   },
   mounted() {
@@ -136,7 +136,7 @@ export default {
       if (!this.scroll) {
         this.scroll = new BScroll(this.$refs.wrapper, {
           scrollY: true,
-          click:true
+          click: true
         });
       } else {
         this.scroll.refresh(); //如果dom结构发生改变调用该方法
@@ -157,14 +157,36 @@ export default {
     },
     play(e) {
       let id = e.currentTarget.getAttribute("data-id");
-      this.songsArray.push({
-        id,
-        name: e.currentTarget.getAttribute("data-name"),
-        artists:e.currentTarget.getAttribute("data-artists")
-      });
-      this.$store.dispatch("getSongInfo", id);
-      this.$store.commit("togglePlay", true);
-      this.$store.commit('changeShowPlayView',true)
+      if (id !== this.songInfo.id) {
+        let sing = {
+          id,
+          name: e.currentTarget.getAttribute("data-name"),
+          artists: e.currentTarget.getAttribute("data-artists")
+        };
+        this.songsArray.push(sing);
+        this.$store.dispatch("tapPlay", sing);
+        this.$store.commit("changeShowPlayView", true);
+      }
+    },
+    playAll() {
+      this.$store.commit("setSongArray", []);
+      for (let i = 0, len = this.detailData.tracks.length; i < len; i++) {
+        let sing = this.detailData.tracks[i];
+        this.songsArray.push({
+          id: sing.id,
+          name: sing.name,
+          artists: joinObjectArray(sing.ar, "/", "name")
+        });
+      }
+
+      let params = {
+        id: this.songsArray[0].id,
+        name: this.songsArray[0].name,
+        artists: this.songsArray[0].artists
+      };
+
+      this.$store.dispatch("tapPlay", params);
+      this.$store.commit("changeShowPlayView", true);
     }
   },
   components: {
@@ -179,11 +201,7 @@ export default {
   position: fixed;
   left: 0;
   top: 0;
-  width: 100%;
-  height: 100%;
-  height: calc(100% - 50px);
   background-color: #fff;
-  // overflow-y: auto;
   z-index: 20;
 
   //修改 van-nav-bar 导航栏的样式
@@ -325,6 +343,12 @@ export default {
       position: relative;
       margin-top: 5px;
 
+      .volume-icon{
+        margin-left: 10px;
+        font-size: 14px;
+        color:$baseRed;
+      }
+
       .index {
         font-size: 16px;
         color: rgb(179, 179, 179);
@@ -347,6 +371,10 @@ export default {
         right: 5px;
         transform: rotateZ(90deg);
         color: rgb(179, 179, 179);
+      }
+
+      .currentPlay{
+        color:$baseRed;
       }
     }
   }
