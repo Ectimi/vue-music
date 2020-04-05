@@ -13,14 +13,14 @@ Vue.use(VueLocalStorage, {
 })
 
 import { 
-  Col, Row, Popup, Tabbar, TabbarItem, Swipe, SwipeItem, 
-  Toast, Slider,Search,Circle,Icon,Divider,Field,Button,
-  NavBar,PullRefresh,Sticky,Tag,Collapse,CollapseItem
+  Col, Row, Popup, Tabbar, TabbarItem, Swipe, SwipeItem, Toast, 
+  Slider,Search,Circle,Icon,Divider,Field,Button,NavBar,PullRefresh,
+  Sticky,Tag,Collapse,CollapseItem,Image,Lazyload,Tab,Tabs,Loading
 } from 'vant';
 
-Vue.use(Col).use(Row).use(Popup).use(Tabbar).use(TabbarItem).use(Swipe).use(SwipeItem)
-.use(Toast).use(Slider).use(Search).use(Circle).use(Icon).use(Divider).use(Field).use(Button)
-.use(NavBar).use(PullRefresh).use(Sticky).use(Tag).use(Collapse).use(CollapseItem)
+Vue.use(Col).use(Row).use(Popup).use(Tabbar).use(TabbarItem).use(Swipe).use(SwipeItem).use(Toast).use(Slider)
+.use(Search).use(Circle).use(Icon).use(Divider).use(Field).use(Button).use(NavBar).use(PullRefresh).use(Sticky)
+.use(Tag).use(Collapse).use(CollapseItem).use(Image).use(Lazyload).use(Tab).use(Tabs).use(Loading)
 
 Vue.prototype.axios = axios;
 

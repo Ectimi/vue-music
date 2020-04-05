@@ -5,7 +5,7 @@
       title="歌单"
       :border="false"
       left-arrow
-      @click-left="()=>{this.$router.push('/')}"
+      @click-left="()=>{this.$router.go(-1)}"
     />
     <!-- 模糊背景 -->
     <div class="bgCover">

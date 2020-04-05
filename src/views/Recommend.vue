@@ -21,7 +21,8 @@
         :data-artists="joinObjectArray(item.artists,'/','name')"
         @click="playMusic"
       >
-        <img :src="item.album && item.album.blurPicUrl" alt class="cover-img" />
+        <!-- <img :src="item.album && item.album.blurPicUrl" alt class="cover-img" /> -->
+        <van-image class="cover-img" :src="item.album && item.album.blurPicUrl" lazy-load />
         <van-icon class="volume-icon" v-if="item.id==songInfo.id" name="volume-o" />
         <div class="info">
           <p class="name van-ellipsis" :class="item.id==songInfo.id?'currentPlay':''">{{item.name}}</p>

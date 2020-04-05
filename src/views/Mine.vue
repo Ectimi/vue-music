@@ -2,6 +2,7 @@
   <div id="mineContainer" class="container">
     <p class="title">我的音乐</p>
     <van-divider />
+    <van-loading color="rgb(255, 45, 33)" v-if="showLoading"/>
     <van-collapse v-model="activeName">
       <van-collapse-item :title="'创建歌单'+ createdList.length" name="1">
         <ul class="playlist-box">
@@ -12,7 +13,8 @@
             :data-id="item.id"
             @click="()=>{$router.push({name:'SonglistDetail',params:{id:item.id}})}"
           >
-            <img :src="item.coverImgUrl" alt class="cover-img" />
+            <!-- <img :src="item.coverImgUrl" alt class="cover-img" /> -->
+            <van-image class="cover-img" :src="item.coverImgUrl" lazy-load />
             <div class="info">
               <p class="name van-multi-ellipsis--l2">{{ index==0?"喜欢的音乐":item.name}}</p>
               <p class="count">{{item.trackCount}}首</p>
@@ -29,7 +31,8 @@
             :data-id="item.id"
             @click="()=>{$router.push({name:'SonglistDetail',params:{id:item.id}})}"
           >
-            <img :src="item.coverImgUrl" alt class="cover-img" />
+            <!-- <img :src="item.coverImgUrl" alt class="cover-img" /> -->
+             <van-image class="cover-img" :src="item.coverImgUrl" lazy-load />
             <div class="info">
               <p class="name van-multi-ellipsis--l2">{{item.name}}</p>
               <p class="count">{{item.trackCount}}首</p>
@@ -38,7 +41,6 @@
         </ul>
       </van-collapse-item>
     </van-collapse>
-   
   </div>
 </template>
 
@@ -50,10 +52,10 @@ export default {
   name: "Mine",
   data() {
     return {
+      showLoading:true,
       createdList: [], //用户创建的歌单
       collectedList: [], //用户收藏的歌单
-      activeName: ['1','2'],
-
+      activeName: ["1", "2"]
     };
   },
   computed: {
@@ -70,8 +72,9 @@ export default {
           this.collectedList.push(playlist[i]);
         }
       }
-      console.log(this.createdList);
-      console.log(this.collectedList);
+      // console.log(this.createdList);
+      // console.log(this.collectedList);
+      this.showLoading = false;
     });
   }
 };
@@ -93,6 +96,14 @@ export default {
     text-align: center;
     background-color: #fff;
     z-index: 10;
+  }
+
+  .van-loading{
+    position: absolute;
+    top:50%;
+    left:50%;
+    transform: translate(-50%,-50%);
+    z-index: 20;
   }
 
   .van-divider {

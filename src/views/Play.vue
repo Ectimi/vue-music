@@ -165,6 +165,7 @@ export default {
 
         for (let i = 0, len = this.songInfo.lyric.length; i < len; i++) {
           if (
+            this.songInfo.lyric[i].time &&
             this.songInfo.lyric[i].time <= time &&
             this.songInfo.lyric[i + 1].time >= time
           ) {

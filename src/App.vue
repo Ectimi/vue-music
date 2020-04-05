@@ -109,7 +109,7 @@ export default {
         this.mode = "out-in"
         this.enterActiveClass="animated slideInRight faster";
         this.leaveActiveClass=""
-      }else if(from.path.indexOf('songlistdetail')>-1 && to.path.indexOf('home')>-1){
+      }else if(from.path.indexOf('songlistdetail')>-1 && (to.path.indexOf('home')>-1 || to.path.indexOf('category')>-1 )){
         this.mode = "in-out"
         this.enterActiveClass="animated slideInLeft faster"
         this.leaveActiveClass="animated slideOutRight faster"
