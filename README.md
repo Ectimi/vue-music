@@ -7,31 +7,10 @@
 运行此项目需要有网易云音乐账号，由于一些api需要登录才能使用，所以此项目的操作逻辑是，打开的时候就显示登录界面，只有登录才能使用，
 本人已将此api部署到个人的服务器上，[可直接使用](http://120.77.3.226:8080/) 
 
+请使用chrome以手机模式运行
 
-## Project setup
-```
-npm install
-```
+运行方式：  
 
-### Compiles and hot-reloads for development
-```
+npm install  
+
 npm run serve
-```
-
-### Compiles and minifies for production
-```
-npm run build
-```
-
-### Run your tests
-```
-npm run test
-```
-
-### Lints and fixes files
-```
-npm run lint
-```
-
-### Customize configuration
-See [Configuration Reference](https://cli.vuejs.org/config/).
