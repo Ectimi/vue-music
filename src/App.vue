@@ -33,16 +33,16 @@
     ></div>
 
     <transition
-      :enter-active-class=enterActiveClass
-      :leave-active-class=leaveActiveClass
-      :mode=mode
+      :enter-active-class="enterActiveClass"
+      :leave-active-class="leaveActiveClass"
+      :mode="mode"
     >
-      <router-view ></router-view>
+      <router-view></router-view>
     </transition>
 
     <!-- <keep-alive v-else>
       <router-view></router-view>
-    </keep-alive> -->
+    </keep-alive>-->
 
     <!-- 底部tab栏 -->
     <div class="tabbar">
@@ -72,9 +72,9 @@ export default {
       currentRate: 30,
       showPopup: false,
       rate: 0,
-      enterActiveClass:"",
-      leaveActiveClass:"",
-      mode:"out-in"
+      enterActiveClass: "",
+      leaveActiveClass: "",
+      mode: "out-in"
     };
   },
   computed: {
@@ -102,22 +102,25 @@ export default {
         this.$refs.audio.pause();
       }
     },
-    '$route'(to,from){
-      let toList=['songlistdetail','category']
-    
-      //如果当前路由由 home 进入 songlistdetail 或者由 mine 进入 songlistdetail 添加过渡路由
-      if((toList.indexOf(to.path.split('/')[2])>-1 || to.path.indexOf('detailbytag')>-1) && ((from.path.indexOf('home')>-1)||(from.path.indexOf('mine')>-1))){
-        this.mode = "out-in"
-        this.enterActiveClass="animated slideInRight faster";
-        this.leaveActiveClass=""
-      }else if((from.path.indexOf('songlistdetail')>-1||from.path.indexOf('category')>-1||from.path.indexOf('detailbytag')>-1) && (to.path.indexOf('home')>-1 || to.path.indexOf('category')>-1 )){
-        this.mode = "in-out"
-        this.enterActiveClass="animated slideInLeft faster"
-        this.leaveActiveClass="animated slideOutRight faster"
-      }else{
-        this.mode = ""
-        this.enterActiveClass=""
-        this.leaveActiveClass=""
+    $route(to, from) {
+      if (
+        to.path.indexOf("songlistdetail") > -1 &&
+        (from.path.indexOf("home") > -1 || from.path.indexOf("mine") > -1)
+      ) {
+        this.mode = "out-in";
+        this.enterActiveClass = "animated slideInRight faster";
+        this.leaveActiveClass = "";
+      } else if (
+        (from.path.indexOf("songlistdetail") > -1 ) &&
+        (to.path.indexOf("home") > -1 || to.path.indexOf("mine") > -1)
+      ) {
+        this.mode = "in-out";
+        this.enterActiveClass = "animated slideInLeft faster";
+        this.leaveActiveClass = "animated slideOutRight faster";
+      } else {
+        this.mode = "";
+        this.enterActiveClass = "";
+        this.leaveActiveClass = "";
       }
     }
   },

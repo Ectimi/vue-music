@@ -3,9 +3,11 @@
     <transition
       enter-active-class="animated slideInRight faster"
       leave-active-class="animated slideOutRight faster"
-      mode="out-in"
+      mode="in-out"
     >
-      <router-view></router-view>
+      <keep-alive>
+        <router-view></router-view>
+      </keep-alive>
     </transition>
     <!-- 搜索框 -->
     <van-row class="search-box">
@@ -142,11 +144,11 @@ import {
 import BScroll from "better-scroll";
 import { joinObjectArray } from "../lib/utils";
 import { mapState } from "vuex";
-import {mixins} from '../mixins/mixins';
+import { mixins } from "../mixins/mixins";
 
 export default {
   name: "Home",
-  mixins:[mixins],
+  mixins: [mixins],
   data() {
     return {
       show: false, //飞入动画
@@ -233,7 +235,7 @@ export default {
           this.flyImage = imgUrl;
           this.startEl = currentTarget.querySelector(".newSong-image");
           this.show = true;
-          this.playMusic(e)
+          this.playMusic(e);
         }
       }
     },
@@ -271,7 +273,7 @@ export default {
         };
         el.addEventListener("transitionend", remove);
       });
-    },
+    }
   }
 };
 </script>
