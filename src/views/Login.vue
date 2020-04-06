@@ -262,7 +262,7 @@ export default {
   height: 100%;
   background-color: #fff;
   overflow: hidden;
-  z-index: 200;
+  z-index: 300;
 
   .van-nav-bar__text {
     color: $baseGray;
