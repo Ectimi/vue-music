@@ -27,6 +27,7 @@ export default {
   width: 100%;
   height: 46px;
   background-color: white;
+  z-index: 1;
 
   .title{
       width:100%;

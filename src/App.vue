@@ -227,7 +227,7 @@ export default {
     width: 100%;
     height: 50px;
     background-image: linear-gradient(rgb(246, 244, 244), rgb(252, 251, 251));
-    opacity: 0.95;
+    // opacity: 0.95;
     z-index: 100;
 
     > div {

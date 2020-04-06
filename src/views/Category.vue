@@ -163,9 +163,7 @@ export default {
         }
       }
     },
-    $route(to,from){
-      console.log(from)
-    }
+
   },
   methods: {
     getData() {

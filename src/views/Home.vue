@@ -44,7 +44,7 @@
             </div>
             <div class="text">歌单</div>
           </van-col>
-          <van-col span="8">
+          <van-col span="8"  @click="()=>{$router.push({path:'/home/ranking'})}">
             <div class="circle">
               <van-icon class="iconfont" class-prefix="icon" name="paihangbang" />
             </div>

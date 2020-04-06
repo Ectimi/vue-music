@@ -7,6 +7,7 @@ import SonglistDetail from '../views/SonglistDetail'
 import Recommend from '../views/Recommend'
 import Category from '../views/Category'
 import DetailByTag from '../views/DetailByTag'
+import Ranking from '../views/Ranking'
 
 Vue.use(VueRouter)
 
@@ -24,15 +25,18 @@ VueRouter.prototype.push = function push(location) {
 
 const routes = [
   { path: '/', redirect: '/home' },
-  { name: 'Home', path: '/home', component: Home,children:[
-    {name:'recommend',path:'/home/recommend',component:Recommend},
-    {name:'category',path:'/home/category',component:Category},
-    { name: 'DetailByTag', path: 'detailbytag/:tag', component: DetailByTag },
-  ] },
+  {
+    name: 'Home', path: '/home', component: Home, children: [
+      { name: 'recommend', path: '/home/recommend', component: Recommend },
+      { name: 'category', path: '/home/category', component: Category },
+      { name: 'ranking', path: '/home/ranking', component: Ranking },
+      { name: 'DetailByTag', path: 'detailbytag/:tag', component: DetailByTag },
+    ]
+  },
   { name: 'Mine', path: '/mine', component: Mine },
   { name: 'Account', path: '/account', component: Account },
   { name: 'SonglistDetail', path: 'songlistdetail/:id', component: SonglistDetail },
-  
+
 ]
 
 const router = new VueRouter({
