@@ -9,6 +9,8 @@
 
 请使用chrome以手机模式运行
 
-运行方式：
-npm install
+运行方式：  
+
+npm install  
+
 npm run serve
