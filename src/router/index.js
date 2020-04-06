@@ -6,6 +6,7 @@ import Account from '../views/Account'
 import SonglistDetail from '../views/SonglistDetail'
 import Recommend from '../views/Recommend'
 import Category from '../views/Category'
+import DetailByTag from '../views/DetailByTag'
 
 Vue.use(VueRouter)
 
@@ -29,7 +30,9 @@ const routes = [
   ] },
   { name: 'Mine', path: '/mine', component: Mine },
   { name: 'Account', path: '/account', component: Account },
-  { name: 'SonglistDetail', path: 'songlistdetail/:id', component: SonglistDetail }
+  { name: 'SonglistDetail', path: '/home/songlistdetail/:id', component: SonglistDetail },
+  { name: 'DetailByTag', path: 'detailbytag/:tag', component: DetailByTag },
+
 ]
 
 const router = new VueRouter({

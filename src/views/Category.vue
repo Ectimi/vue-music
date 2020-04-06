@@ -1,12 +1,7 @@
 <template>
   <div id="categoryContainer" class="container">
-    <van-nav-bar
-      ref="navBar"
-      title="歌单广场"
-      :border="false"
-      left-arrow
-      @click-left="()=>{this.$router.push('/')}"
-    />
+    <NavBar :title="'歌单广场'" @click-left="()=>{this.$router.go(-1)}"></NavBar>
+    <van-icon name="apps-o" class="more-btn" @click="toggleCategoryBox(true)" />
     <van-tabs
       v-model="active"
       class="tab"
@@ -37,6 +32,28 @@
         </div>
       </van-tab>
     </van-tabs>
+
+    <transition
+      enter-active-class="animated slideInRight faster"
+      leave-active-class="animated slideOutRight faster"
+      mode="out-in"
+    >
+      <div id="categoryBox" v-show="showCategoryBox">
+        <NavBar :title="'分类'" @click-left="toggleCategoryBox(false)"></NavBar>
+        <div class="category-wrapper">
+          <div class="category-item" v-for="(item,index) in categoryList" :key="index">
+            <van-row>
+              <van-col span="4" offset="1" class="name">{{item.name}}</van-col>
+            </van-row>
+            <van-row>
+              <van-col offset="1" v-for="(tag,ind) in item.tags" :key="tag+ind" class="tag">
+                <van-tag round :data-tag="tag" @click="()=>{$router.push({name:'DetailByTag',params:{tag}})}">{{tag}}</van-tag>
+              </van-col>
+            </van-row>
+          </div>
+        </div>
+      </div>
+    </transition>
   </div>
 </template>
 
@@ -47,6 +64,8 @@ import {
   api_getPlayListByCategory
 } from "../api";
 import BScroll from "better-scroll";
+import NavBar from "../components/NavBar";
+import { getStyle } from "../lib/utils";
 
 export default {
   name: "Category",
@@ -77,8 +96,12 @@ export default {
           scroll: null, //当前标签页的bscroll实例
           cat: "全部" //当前标签页请求参数，推荐页默认请求全部
         }
-      ]
+      ],
+      showCategoryBox: false
     };
+  },
+  components: {
+    NavBar
   },
   computed: {
     showTips() {
@@ -90,6 +113,39 @@ export default {
         }
       }
       return false;
+    },
+    categoryList() {
+      /**
+       *  allCategory是一个对象，键名是数字，有5个键名 0，1，2，3，4
+       *  构造以下格式的数据
+       * [
+       *    {
+       *      name:类型名
+       *      tags:[标签数组]
+       *    },
+       *    {
+       *      name:类型名
+       *      tags:[标签数组]
+       *    }
+       * ]
+       */
+      if (this.allTags.length > 0) {
+        let list = [];
+        let counts = Object.keys(this.allCategory).length;
+        let index = 0;
+        for (let i = 0; i < counts; i++) {
+          let name = this.allCategory[i];
+          let tags = [];
+          for (let j = 0, len = this.allTags.length; j < len; j++) {
+            if (this.allTags[j].category == i) {
+              tags.push(this.allTags[j].name);
+            }
+          }
+          list.push({ name,tags });
+        }
+        return list;
+      }
+      return []
     }
   },
   created() {
@@ -107,6 +163,9 @@ export default {
         }
       }
     },
+    $route(to,from){
+      console.log(from)
+    }
   },
   methods: {
     getData() {
@@ -197,6 +256,20 @@ export default {
     },
     //每个标签栏第一次渲染完毕时触发
     renderedHandler() {
+      //为每个tab页的playlist设置固定高度，因为需要用到betterScroll,容器必须有明确的高度
+      this.$nextTick(() => {
+        var navbarHeight = getStyle("#navbar", "height");
+
+        var tabHeight = getStyle(".van-tabs__wrap", "height");
+
+        var tabbarHeight = getStyle(".tabbar", "height");
+
+        var height =
+          document.body.offsetHeight - navbarHeight - tabHeight - tabbarHeight;
+
+        document.querySelector(".playlistbox" + this.active).style.height =
+          height + "px";
+      });
       for (let i = 0, len = this.isActived.length; i < len; i++) {
         if (this.isActived[i].index == this.active) {
           if (this.isActived[i] && !this.isActived[i].scroll) {
@@ -249,6 +322,14 @@ export default {
           }
         }
       }
+    },
+    toggleCategoryBox(flag) {
+      this.showCategoryBox = flag;
+      if (flag) {
+        document.querySelector("#categoryContainer").style.zIndex = "110";
+      } else {
+        document.querySelector("#categoryContainer").style.zIndex = "100";
+      }
     }
   }
 };
@@ -262,19 +343,19 @@ export default {
   width: 100%;
   height: 100%;
   background-color: #fff;
-  z-index: 20;
+  z-index: 100;
   overflow-y: auto;
 
-  .van-nav-bar {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 46px;
+  .more-btn {
+    position: absolute;
+    top: 60px;
+    right: 10px;
+    font-size: 16px;
+    z-index: 1;
+  }
 
-    i {
-      color: black;
-    }
+  .van-tabs__wrap {
+    width: 90%;
   }
 
   .tab {
@@ -283,7 +364,7 @@ export default {
 
   .playlist-box {
     width: 100%;
-    height: 550px;
+    // height: 550px;
     margin-top: 10px;
     overflow: hidden;
   }
@@ -310,6 +391,47 @@ export default {
 
     .name {
       width: 100%;
+    }
+  }
+
+  #categoryBox {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: #fff;
+    overflow-y: auto;
+    z-index: 300;
+
+    .category-wrapper {
+      margin-top: 46px;
+    }
+
+    .category-item{
+      margin: 10px 0;
+
+      .van-tag{
+        display: block;
+        width:65px;
+        height: 20px;
+        line-height: 20px;
+        text-align: center;
+        background-color:rgb(202, 198, 198);
+        white-space: nowrap;
+        color:black;
+      }
+    }
+
+    .tag{
+      margin-top: 10px;
+      margin-bottom: 10px;
+    }
+
+
+    .name {
+      font-size: 14px;
+      font-weight: bold;
     }
   }
 }

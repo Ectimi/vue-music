@@ -104,11 +104,18 @@ function RandomNumBoth(Min, Max) {
     return num;
 }
 
+function getStyle(selector, prop) {
+    return parseFloat(
+        getComputedStyle(document.querySelector(selector))[prop]
+    );
+}
+
 export {
     joinObjectArray,
     isEmpty,
     checkPhone,
     debounce,
     s_to_hs,
-    RandomNumBoth
+    RandomNumBoth,
+    getStyle
 }
